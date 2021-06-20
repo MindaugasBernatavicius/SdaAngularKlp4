@@ -4,6 +4,9 @@ import {BlogpostsService} from "../../services/blogposts.service";
 @Component({
   selector: 'app-blogposts',
   template: `
+    <div *ngIf="error" class="alert alert-warning" role="alert">
+      {{ error.message }}
+    </div>
     <table class="table">
       <thead>
       <tr>
@@ -20,7 +23,7 @@ import {BlogpostsService} from "../../services/blogposts.service";
         <td>{{ blogpost.post }}</td>
         <td>
           <button class="btn btn-warning me-2">Edit</button>
-          <button class="btn btn-danger me-2">Delete</button>
+          <button (click)="deletePost(blogpost.id)" class="btn btn-danger me-2">Delete</button>
         </td>
       </tr>
       </tbody>
@@ -42,6 +45,7 @@ export class BlogpostsComponent implements OnInit {
   blogposts: any = [];
   author = ``;
   text = ``;
+  error: any;
 
   constructor(private blogpostsService: BlogpostsService) {
   }
@@ -49,7 +53,7 @@ export class BlogpostsComponent implements OnInit {
   ngOnInit(): void {
     this.blogpostsService.getBlogPosts().subscribe(
       (res: any) => this.blogposts = res,
-      (err: any) => console.log(err)
+      (err: any) => { this.error = err; console.log(err) }
     );
   }
 
@@ -64,7 +68,14 @@ export class BlogpostsComponent implements OnInit {
         this.author = ``;
         this.text = ``;
       },
-      (err: any) => console.log(err)
+      (err: any) => { this.error = err; console.log(err); }
+    );
+  }
+
+  deletePost(id: number): void {
+    this.blogpostsService.deletePost(id).subscribe(
+      (res: any) => this.blogposts = this.blogposts.filter((p: any) => p.id !== id),
+      (err: any) => { this.error = err; console.log(err); }
     );
   }
 }

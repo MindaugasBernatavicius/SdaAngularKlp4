@@ -21,4 +21,8 @@ export class BlogpostsService {
   createPost(author: string, text: string) {
     return this.httpClient.post<any>(this.url, { 'author': author, 'post': text });
   }
+
+  deletePost(id: number) {
+    return this.httpClient.delete(this.url + '/' + id)
+  }
 }
